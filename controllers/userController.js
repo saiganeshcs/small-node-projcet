@@ -1,9 +1,9 @@
 const asyncHandler = require('express-async-handler')
-const User = require("../mondles/useModle")
+const User = require("../models/userModel")
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-// @decs regester a user
+// @decs register a user
 // @decs post /api/users/register
 // @access public
 
@@ -40,14 +40,15 @@ if(!email || !password){
     res.status(400)
     throw new Error('Please fill all the fields')
 }
-const loginnedUser = await User.findOne({email})
+const userDetails = await User.findOne({email})
 // compare password with hashed password
-if(loginnedUser &&( bcrypt.compare(password, loginnedUser.password))){
+const passwordMatch = userDetails ? await bcrypt.compare(password, userDetails.password) : false
+if(userDetails && passwordMatch){
     const accessToken = jwt.sign({
         user:{
-            userName: loginnedUser.userName,
-            email: loginnedUser.email,
-            id: loginnedUser._id 
+            userName: userDetails.userName,
+            email: userDetails.email,
+            id: userDetails._id 
         }
     }, process.env.ACCESS_TOKEN_SECRET,{expiresIn: process.env.TOKEN_EXPIRES_IN })
     res.status(200).json({accessToken})
