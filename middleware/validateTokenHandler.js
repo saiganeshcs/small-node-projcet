@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const jwt = require('jsonwebtoken')
-const User = require("../mondles/useModle")
+const User = require("../models/userModel")
 
 const validateTokenHandler = asyncHandler(async (req,res,next)=>{
     let token;
